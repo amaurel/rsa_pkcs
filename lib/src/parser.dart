@@ -21,7 +21,6 @@ class RSAPKCSParser {
         .skipWhile((String line)=>!line.startsWith(PKCS_HEADER))
         .toList();
     if (lines.isEmpty) this._error("format error");
-    print(lines);
     return new RSAKeyPair(_publicKey(lines),_privateKey(lines));
   }
   
