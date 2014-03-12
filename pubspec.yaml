@@ -1,0 +1,11 @@
+name: rsa_pkcs
+version: 0.1.0
+author: Alexandre Maurel <alexandre.maurel@gmail.com>
+description: RSA,PKCS#1,PKCS#8
+homepage: https://github.com/amaurel/rsa_pkcs
+dependencies:
+  asn1lib: 
+    path: ../../third/asn1lib
+dev_dependencies:
+  crypto: any
+  unittest: any
