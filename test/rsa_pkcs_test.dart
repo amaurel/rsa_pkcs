@@ -8,8 +8,9 @@ import 'dart:io';
 
 main() {
  
-  test("rsa private key", () {
+  test("rsa private key PKCS#1", () {
     //openssl genrsa -out rsa_private_key.pem
+    //
     File rsa_private_key_file = new File("./resource/rsa_private_key.pem");
     String pem = rsa_private_key_file.readAsStringSync();
     RSAPKCSParser parser = new RSAPKCSParser();
@@ -30,7 +31,7 @@ main() {
     expect(privateKey.coefficient , equals(new BigInteger ([0x00,0x92,0xe8,0x95,0xc1,0xa9,0xb7,0xb7,0x05,0xfb,0x69,0x4b,0xba,0x2d,0x52,0xcb,0x99,0x01,0xd4,0x62,0x8d,0xb7,0x94,0xeb,0x43,0x86,0x1b,0x08,0x6c,0x55,0x7d,0x29,0x13])));
   });
   
-  test("rsa public key", () {
+  test("rsa public key PKCS#8", () {
     //openssl genrsa -out rsa_private_key.pem
     //openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
     File rsa_private_key_file = new File("./resource/rsa_public_key.pem");

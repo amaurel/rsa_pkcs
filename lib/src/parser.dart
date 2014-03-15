@@ -13,8 +13,13 @@ class RSAPKCSParser {
   static const String PKCS8_PRIVATE_HEADER = "-----BEGIN PRIVATE KEY-----";
   static const String PKCS1_PRIVATE_FOOTER = "-----END RSA PRIVATE KEY-----";
   static const String PKCS8_PRIVATE_FOOTER = "-----END PRIVATE KEY-----";
+  
+  static const String PKCS8_PRIVATE_ENC_HEADER = "-----BEGIN ENCRYPTED PRIVATE KEY-----";
+  static const String PKCS8_PRIVATE_ENC_FOOTER = "-----END ENCRYPTED PRIVATE KEY-----";
+  
+  
     
-  RSAKeyPair parsePEM(String pem){
+  RSAKeyPair parsePEM(String pem,{String password}){
     List lines  = pem.split("\n")
         .map((line)=>line.trim())
         .where((line)=>line.isNotEmpty)
@@ -24,7 +29,7 @@ class RSAPKCSParser {
     return new RSAKeyPair(_publicKey(lines),_privateKey(lines));
   }
   
-  RSAPrivateKey _privateKey(List<String> lines){
+  RSAPrivateKey _privateKey(List<String> lines,{String password}){
     var header = lines.indexOf(PKCS1_PRIVATE_HEADER);
  
     var footer;
@@ -32,6 +37,8 @@ class RSAPKCSParser {
       footer = lines.indexOf(PKCS1_PRIVATE_FOOTER);
     } else if ((header = lines.indexOf(PKCS8_PRIVATE_HEADER)) >= 0 ){
       footer = lines.indexOf(PKCS8_PRIVATE_FOOTER);
+    } else if ((header = lines.indexOf(PKCS8_PRIVATE_ENC_HEADER)) >= 0 ){
+      footer = lines.indexOf(PKCS8_PRIVATE_ENC_FOOTER);
     } else return null;
     if (footer < 0 ) this._error("format error : cannot find footer");
     
@@ -42,7 +49,18 @@ class RSAPKCSParser {
     ASN1Sequence seq = p.nextObject();
     
     if (lines[header] == PKCS1_PRIVATE_HEADER) return _pkcs1PrivateKey(seq);
-    else return _pkcs8PrivateKey(seq);
+    else if (lines[header] == PKCS8_PRIVATE_HEADER) return _pkcs8PrivateKey(seq);
+    else return _pkcs8PrivateEncKey(seq, password);
+  }
+  
+  RSAPrivateKey _pkcs8PrivateEncKey(ASN1Sequence seq,String password){
+    ASN1OctetString asnkey = (seq.elements[0] as ASN1Sequence).elements[2];
+    var bytes = asnkey.valueBytes();
+    final key = new Uint8List.fromList( [0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xAA,0xBB,0xCC,0xDD,0xEE,0xFF] );
+    final params = new KeyParameter(key);
+    BlockCipher bc = new BlockCipher("AES");
+
+    return null;
   }
    
    RSAPrivateKey _pkcs1PrivateKey(ASN1Sequence seq){
