@@ -6,3 +6,5 @@ pubspec.lock
 /gitpush.dart
 /gitstatus.dart
 /publish.dart
+.pub/
+.packages
