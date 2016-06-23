@@ -5,8 +5,6 @@ description: RSA,PKCS#1,PKCS#8
 homepage: https://github.com/amaurel/rsa_pkcs
 dependencies:
   asn1lib: any
-  pointycastle: "^0.10.0"
+  pointycastle: any
 dev_dependencies:
   test: any
-environment:
-  sdk: ">=1.8.0 <2.0.0"
