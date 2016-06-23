@@ -5,7 +5,6 @@ description: RSA,PKCS#1,PKCS#8
 homepage: https://github.com/amaurel/rsa_pkcs
 dependencies:
   asn1lib: any
-  cipher: any
+  pointycastle: "^0.10.0"
 dev_dependencies:
-  crypto: any 
-  unittest: any
+  test: any
