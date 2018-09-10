@@ -43,7 +43,7 @@ class RSAPKCSParser {
     if (footer < 0) this._error("format error : cannot find footer");
 
     var key = lines.sublist(header + 1, footer).join("");
-    var key_bytes = new Uint8List.fromList(BASE64.decode(key));
+    var key_bytes = new Uint8List.fromList(base64.decode(key));
     var p = new ASN1Parser(key_bytes);
 
     ASN1Sequence seq = p.nextObject();
@@ -80,21 +80,19 @@ class RSAPKCSParser {
     // ]);
     // final params = new KeyParameter(key);
     // BlockCipher bc = new BlockCipher("AES");
-
-    return null;
   }
 
   RSAPrivateKey _pkcs1PrivateKey(ASN1Sequence seq) {
     RSAPrivateKey key = new RSAPrivateKey();
     key.version = (seq.elements[0] as ASN1Integer).intValue;
-    key.modulus = (seq.elements[1] as ASN1Integer).intValue;
+    key.modulus = (seq.elements[1] as ASN1Integer).valueAsBigInteger;
     key.publicExponent = (seq.elements[2] as ASN1Integer).intValue;
-    key.privateExponent = (seq.elements[3] as ASN1Integer).intValue;
-    key.prime1 = (seq.elements[4] as ASN1Integer).intValue;
-    key.prime2 = (seq.elements[5] as ASN1Integer).intValue;
-    key.exponent1 = (seq.elements[6] as ASN1Integer).intValue;
-    key.exponent2 = (seq.elements[7] as ASN1Integer).intValue;
-    key.coefficient = (seq.elements[8] as ASN1Integer).intValue;
+    key.privateExponent = (seq.elements[3] as ASN1Integer).valueAsBigInteger;
+    key.prime1 = (seq.elements[4] as ASN1Integer).valueAsBigInteger;
+    key.prime2 = (seq.elements[5] as ASN1Integer).valueAsBigInteger;
+    key.exponent1 = (seq.elements[6] as ASN1Integer).valueAsBigInteger;
+    key.exponent2 = (seq.elements[7] as ASN1Integer).valueAsBigInteger;
+    key.coefficient = (seq.elements[8] as ASN1Integer).valueAsBigInteger;
     return key;
   }
 
@@ -116,7 +114,7 @@ class RSAPKCSParser {
     if (footer < 0) this._error("format error : cannot find footer");
 
     var key = lines.sublist(header + 1, footer).join("");
-    var key_bytes = new Uint8List.fromList(BASE64.decode(key));
+    var key_bytes = new Uint8List.fromList(base64.decode(key));
     var p = new ASN1Parser(key_bytes);
 
     ASN1Sequence seq = p.nextObject();
@@ -129,7 +127,7 @@ class RSAPKCSParser {
 
   RSAPublicKey _pkcs1PublicKey(ASN1Sequence seq) {
     RSAPublicKey key = new RSAPublicKey();
-    key.modulus = (seq.elements[0] as ASN1Integer).intValue;
+    key.modulus = (seq.elements[0] as ASN1Integer).valueAsBigInteger;
     key.publicExponent = (seq.elements[1] as ASN1Integer).intValue;
     return key;
   }
@@ -154,18 +152,18 @@ class RSAKeyPair {
 }
 
 class RSAPublicKey {
-  BigInteger modulus;
+  BigInt modulus;
   int publicExponent;
 }
 
 class RSAPrivateKey {
   int version;
-  BigInteger modulus;
+  BigInt modulus;
   int publicExponent;
-  BigInteger privateExponent;
-  BigInteger prime1;
-  BigInteger prime2;
-  BigInteger exponent1;
-  BigInteger exponent2;
-  BigInteger coefficient;
+  BigInt privateExponent;
+  BigInt prime1;
+  BigInt prime2;
+  BigInt exponent1;
+  BigInt exponent2;
+  BigInt coefficient;
 }
