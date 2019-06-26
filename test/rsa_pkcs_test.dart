@@ -1,31 +1,31 @@
 library rsa_pkcs_test;
 
+import 'dart:io';
 import 'package:test/test.dart';
 import 'package:rsa_pkcs/rsa_pkcs.dart';
 
-import 'dart:io';
-
-main() {
-  test("rsa private key PKCS#1", () {
+/// Test suite
+void main() {
+  test('rsa private key PKCS#1', () {
     //openssl genrsa -out rsa_private_key.pem
     //
-    File rsa_private_key_file = new File("test/resource/rsa_private_key.pem");
-    String pem = rsa_private_key_file.readAsStringSync();
-    RSAPKCSParser parser = new RSAPKCSParser();
-    RSAKeyPair pair = parser.parsePEM(pem);
-    var privateKey = pair.private;
+    final File rsaPrivateKeyFile = File('test/resource/rsa_private_key.pem');
+    final String pem = rsaPrivateKeyFile.readAsStringSync();
+    final RSAPKCSParser parser = RSAPKCSParser();
+    final RSAKeyPair pair = parser.parsePEM(pem);
+    final RSAPrivateKey privateKey = pair.private;
 
     expect(pair.public, equals(null));
     expect(privateKey != null, equals(true));
     expect(privateKey.version, equals(0));
-    final expectedModulus = BigInt.parse(
+    final BigInt expectedModulus = BigInt.parse(
       '00d83c3cacb3b767a1020f947ca2012010ba494d86bda1efd437357b91d5c1e61b12384cd3c01f628312a5ef15cf003f62c4f6b835bbb3ea99409f87e583fa6991',
       radix: 16,
     );
     expect(privateKey.modulus, expectedModulus);
     expect(privateKey.publicExponent, equals(65537));
 
-    final expectedPrivateComponent = BigInt.parse(
+    final BigInt expectedPrivateComponent = BigInt.parse(
         '00a0c22fcda992b9cd5eeddc53c85193d83bd6917791f6198a293d6ecfde1e5885fbc0a766aaca385dd8b3b16a58201baec3900b5c1636321a0167e956d5fbe001',
         radix: 16);
     expect(privateKey.privateExponent, expectedPrivateComponent);
@@ -56,15 +56,15 @@ main() {
             radix: 16));
   });
 
-  test("rsa public key PKCS#8", () {
+  test('rsa public key PKCS#8', () {
     //openssl genrsa -out rsa_private_key.pem
     //openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
-    File rsa_private_key_file = new File("test/resource/rsa_public_key.pem");
-    String pem = rsa_private_key_file.readAsStringSync();
-    RSAPKCSParser parser = new RSAPKCSParser();
-    RSAKeyPair pair = parser.parsePEM(pem);
-    var privateKey = pair.private;
-    var publicKey = pair.public;
+    final File rsaPrivateKeyFile = File('test/resource/rsa_public_key.pem');
+    final String pem = rsaPrivateKeyFile.readAsStringSync();
+    final RSAPKCSParser parser = RSAPKCSParser();
+    final RSAKeyPair pair = parser.parsePEM(pem);
+    final RSAPrivateKey privateKey = pair.private;
+    final RSAPublicKey publicKey = pair.public;
 
     expect(privateKey, equals(null));
     expect(publicKey != null, equals(true));
