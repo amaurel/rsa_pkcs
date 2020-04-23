@@ -13,6 +13,8 @@ openssl rsa -in rsa_private_key.pem -text -noout -out rsa_private_key.txt
 openssl pkcs8 -in rsa_private_key.pem -topk8 -v2 aes-256-cbc -out rsa_enc_private_key.pem
 
 openssl pkcs8 -in rsa_private_key.pem -topk8 -v2 aes-256-cbc -v2prf hmacWithSHA256 -out rsa_enc_private_key.pem
+
+openssl pkcs8 -in rsa_private_key.pem -nocrypt -topk8 -out rsa_pkcs8_private_key.pem
 ```
 
 
@@ -95,6 +97,32 @@ void main() {
             '00d83c3cacb3b767a1020f947ca2012010ba494d86bda1efd437357b91d5c1e61b12384cd3c01f628312a5ef15cf003f62c4f6b835bbb3ea99409f87e583fa6991',
             radix: 16));
     expect(publicKey.publicExponent, equals(65537));
+  });
+
+  test('rsa private key PKCS#8', () {
+    //openssl genrsa -out rsa_private_key.pem
+    //openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
+    final File rsaPrivateKeyFile =
+        File('test/resource/rsa_pkcs8_private_key.pem');
+    final String pem = rsaPrivateKeyFile.readAsStringSync();
+    final RSAPKCSParser parser = RSAPKCSParser();
+    final RSAKeyPair pair = parser.parsePEM(pem);
+    final RSAPrivateKey privateKey = pair.private;
+    final RSAPublicKey publicKey = pair.public;
+
+    expect(privateKey != null, equals(true));
+    expect(publicKey, equals(null));
+
+    expect(
+        privateKey.modulus,
+        BigInt.parse(
+            'a2d3fcf35dc37d26edaa77de11380ef3152939b15e8967c3a643ee83da33d9869a2d1d2663306e14629c999ad13545e6e62b0f12bad737edeb1bf26f400d850c3f36adc5fb84ad8ad6459ec51360f2c1d30068fb1e1df44698cf8be30097d8d4add4acb8591093546ac41421b41348b7d5bbe447fe235366995a974166986895',
+            radix: 16));
+    expect(
+        privateKey.privateExponent,
+        BigInt.parse(
+            '8db5ab66eecaad484cfdd876b74baf8f15729c98666b75984c42c0f995d51c52ce29c73dda8392ba411c837ebee6fb603a1f6d6de2985e3fbd27c475d82c2c0698aa9b66da964072c1f5d488a3f61bb201429cecd2bfd9449f965d88b4d5ce8ed76934e1a0644cc5fd195adaadfe0c3090d40b4f6cc0bdce4badc91369bc58bd',
+            radix: 16));
   });
 }
 

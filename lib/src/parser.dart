@@ -25,7 +25,7 @@ class RSAPKCSParser {
         .split('\n')
         .map((String line) => line.trim())
         .where((String line) => line.isNotEmpty)
-        .skipWhile((String line) => !line.startsWith(pkcsHeader))
+        // .skipWhile((String line) => !line.startsWith(pkcsHeader))
         .toList();
     if (lines.isEmpty) {
       _error('format error');
@@ -34,14 +34,17 @@ class RSAPKCSParser {
   }
 
   RSAPrivateKey _privateKey(List<String> lines, {String password}) {
-    final int header = lines.indexOf(pkcs1PrivateHeader);
-
+    int header;
     int footer;
-    if (header >= 0) {
+
+    if (lines.contains(pkcs1PrivateHeader)) {
+      header = lines.indexOf(pkcs1PrivateHeader);
       footer = lines.indexOf(pkcs1PrivateFooter);
     } else if (lines.contains(pkcs8PrivateHeader)) {
+      header = lines.indexOf(pkcs8PrivateHeader);
       footer = lines.indexOf(pkcs8PrivateFooter);
     } else if (lines.contains(pkcs8PrivateEncHeader)) {
+      header = lines.indexOf(pkcs8PrivateEncHeader);
       footer = lines.indexOf(pkcs8PrivateEncFooter);
     } else {
       return null;
@@ -112,13 +115,14 @@ class RSAPKCSParser {
   }
 
   RSAPublicKey _publicKey(List<String> lines) {
-    int header = lines.indexOf(pkcs1PublicHeader);
+    int header;
     int footer;
-    if (header >= 0) {
+    if (lines.contains(pkcs1PublicHeader)) {
+      header = lines.indexOf(pkcs1PublicHeader);
       footer = lines.indexOf(pkcs1PublicFooter);
     } else if (lines.contains(pkcs8PublicHeader)) {
-      footer = lines.indexOf(pkcs8PublicFooter);
       header = lines.indexOf(pkcs8PublicHeader);
+      footer = lines.indexOf(pkcs8PublicFooter);
     } else {
       return null;
     }

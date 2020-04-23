@@ -1,3 +1,6 @@
+## 1.1.1
+* Bugfix for PKCS#8 keys to work properly
+
 ## 1.0.0
 
 * Supports Dart 2
