@@ -76,4 +76,29 @@ void main() {
             radix: 16));
     expect(publicKey.publicExponent, equals(65537));
   });
+  test('rsa private key PKCS#8', () {
+    //openssl genrsa -out rsa_private_key.pem
+    //openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
+    final File rsaPrivateKeyFile =
+        File('test/resource/rsa_pkcs8_private_key.pem');
+    final String pem = rsaPrivateKeyFile.readAsStringSync();
+    final RSAPKCSParser parser = RSAPKCSParser();
+    final RSAKeyPair pair = parser.parsePEM(pem);
+    final RSAPrivateKey privateKey = pair.private;
+    final RSAPublicKey publicKey = pair.public;
+
+    expect(privateKey != null, equals(true));
+    expect(publicKey, equals(null));
+
+    expect(
+        privateKey.modulus,
+        BigInt.parse(
+            '00d83c3cacb3b767a1020f947ca2012010ba494d86bda1efd437357b91d5c1e61b12384cd3c01f628312a5ef15cf003f62c4f6b835bbb3ea99409f87e583fa6991',
+            radix: 16));
+    expect(
+        privateKey.privateExponent,
+        BigInt.parse(
+            '00a0c22fcda992b9cd5eeddc53c85193d83bd6917791f6198a293d6ecfde1e5885fbc0a766aaca385dd8b3b16a58201baec3900b5c1636321a0167e956d5fbe001',
+            radix: 16));
+  });
 }
