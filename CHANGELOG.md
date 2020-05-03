@@ -1,4 +1,9 @@
+## 1.1.2
+
+* Parse certificate pem files
+
 ## 1.1.1
+
 * Bugfix for PKCS#8 keys to work properly
 
 ## 1.0.0

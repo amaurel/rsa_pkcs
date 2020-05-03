@@ -19,6 +19,9 @@ class RSAPKCSParser {
   static const String pkcs8PrivateEncFooter =
       '-----END ENCRYPTED PRIVATE KEY-----';
 
+  static const String certHeader = '-----BEGIN CERTIFICATE-----';
+  static const String certFooter = '-----END CERTIFICATE-----';
+
   /// Parse PEM
   RSAKeyPair parsePEM(String pem, {String password}) {
     final List<String> lines = pem
@@ -60,11 +63,18 @@ class RSAPKCSParser {
 
     if (lines[header] == pkcs1PrivateHeader) {
       return _pkcs1PrivateKey(seq);
-    } else if (lines[header] == pkcs8PrivateHeader) {
-      return _pkcs8PrivateKey(seq);
     } else {
       return _pkcs8PrivateEncKey(seq, password);
     }
+  }
+
+  RSAPublicKey _pkcs8CertificatePrivateKey(ASN1Sequence seq) {
+    if (seq.elements.length != 3) _error('Bad certificate format');
+    var certificate = seq.elements[0] as ASN1Sequence;
+
+    var subjectPublicKeyInfo = certificate.elements[6] as ASN1Sequence;
+
+    return _pkcs8PublicKey(subjectPublicKeyInfo);
   }
 
   RSAPrivateKey _pkcs8PrivateEncKey(ASN1Sequence seq, String password) {
@@ -123,6 +133,9 @@ class RSAPKCSParser {
     } else if (lines.contains(pkcs8PublicHeader)) {
       header = lines.indexOf(pkcs8PublicHeader);
       footer = lines.indexOf(pkcs8PublicFooter);
+    } else if (lines.contains(certHeader)) {
+      header = lines.indexOf(certHeader);
+      footer = lines.indexOf(certFooter);
     } else {
       return null;
     }
@@ -137,6 +150,11 @@ class RSAPKCSParser {
 
     if (lines[header] == pkcs1PublicHeader) {
       return _pkcs1PublicKey(seq);
+    }
+    if (lines[header] == pkcs1PublicHeader) {
+      return _pkcs1PublicKey(seq);
+    } else if (lines[header] == certHeader) {
+      return _pkcs8CertificatePrivateKey(seq);
     } else {
       return _pkcs8PublicKey(seq);
     }
@@ -211,4 +229,9 @@ class RSAPrivateKey {
 
   /// Coefficient
   BigInt coefficient;
+}
+
+class X509Certificate {
+  int version;
+  int serial;
 }
