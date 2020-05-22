@@ -1,3 +1,7 @@
+## 1.1.3
+
+* pkcs8 private key header fix
+
 ## 1.1.2
 
 * Parse certificate pem files
