@@ -63,6 +63,8 @@ class RSAPKCSParser {
 
     if (lines[header] == pkcs1PrivateHeader) {
       return _pkcs1PrivateKey(seq);
+    } else if (lines[header] == pkcs8PrivateHeader) {
+      return _pkcs8PrivateKey(seq);
     } else {
       return _pkcs8PrivateEncKey(seq, password);
     }
