@@ -1,3 +1,7 @@
+## 1.1.4
+
+* asn1lib: "^0.8.1"
+
 ## 1.1.3
 
 * pkcs8 private key header fix
