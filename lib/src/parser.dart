@@ -23,7 +23,7 @@ class RSAPKCSParser {
   static const String certFooter = '-----END CERTIFICATE-----';
 
   /// Parse PEM
-  RSAKeyPair parsePEM(String pem, {String password}) {
+  RSAKeyPair parsePEM(String pem, {String? password}) {
     final List<String> lines = pem
         .split('\n')
         .map((String line) => line.trim())
@@ -36,9 +36,9 @@ class RSAPKCSParser {
     return RSAKeyPair(_publicKey(lines), _privateKey(lines));
   }
 
-  RSAPrivateKey _privateKey(List<String> lines, {String password}) {
-    int header;
-    int footer;
+  RSAPrivateKey? _privateKey(List<String> lines, {String? password}) {
+    late int header;
+    late int footer;
 
     if (lines.contains(pkcs1PrivateHeader)) {
       header = lines.indexOf(pkcs1PrivateHeader);
@@ -59,14 +59,14 @@ class RSAPKCSParser {
     final Uint8List keyBytes = Uint8List.fromList(base64.decode(key));
     final ASN1Parser p = ASN1Parser(keyBytes);
 
-    final ASN1Sequence seq = p.nextObject();
+    final ASN1Sequence seq = p.nextObject() as ASN1Sequence;
 
     if (lines[header] == pkcs1PrivateHeader) {
       return _pkcs1PrivateKey(seq);
     } else if (lines[header] == pkcs8PrivateHeader) {
       return _pkcs8PrivateKey(seq);
     } else {
-      return _pkcs8PrivateEncKey(seq, password);
+      return _pkcs8PrivateEncKey(seq, password!);
     }
   }
 
@@ -106,29 +106,20 @@ class RSAPKCSParser {
   }
 
   RSAPrivateKey _pkcs1PrivateKey(ASN1Sequence seq) {
-    final RSAPrivateKey key = RSAPrivateKey();
     final List<ASN1Integer> asn1Ints = seq.elements.cast<ASN1Integer>();
-    key.version = asn1Ints[0].intValue;
-    key.modulus = asn1Ints[1].valueAsBigInteger;
-    key.publicExponent = asn1Ints[2].intValue;
-    key.privateExponent = asn1Ints[3].valueAsBigInteger;
-    key.prime1 = asn1Ints[4].valueAsBigInteger;
-    key.prime2 = asn1Ints[5].valueAsBigInteger;
-    key.exponent1 = asn1Ints[6].valueAsBigInteger;
-    key.exponent2 = asn1Ints[7].valueAsBigInteger;
-    key.coefficient = asn1Ints[8].valueAsBigInteger;
-    return key;
+    return RSAPrivateKey(asn1Ints[0].intValue, asn1Ints[1].valueAsBigInteger!, asn1Ints[2].intValue, asn1Ints[3].valueAsBigInteger!,
+     asn1Ints[4].valueAsBigInteger!, asn1Ints[5].valueAsBigInteger!, asn1Ints[6].valueAsBigInteger!, asn1Ints[7].valueAsBigInteger!,
+     asn1Ints[8].valueAsBigInteger!);
   }
 
   RSAPrivateKey _pkcs8PrivateKey(ASN1Sequence seq) {
-    final ASN1OctetString os = seq.elements[2];
-    final ASN1Parser p = ASN1Parser(os.valueBytes());
-    return _pkcs1PrivateKey(p.nextObject());
+    final ASN1Parser p = ASN1Parser(seq.elements[2].valueBytes());
+    return _pkcs1PrivateKey(p.nextObject() as ASN1Sequence);
   }
 
-  RSAPublicKey _publicKey(List<String> lines) {
-    int header;
-    int footer;
+  RSAPublicKey? _publicKey(List<String> lines) {
+    late int header;
+    late int footer;
     if (lines.contains(pkcs1PublicHeader)) {
       header = lines.indexOf(pkcs1PublicHeader);
       footer = lines.indexOf(pkcs1PublicFooter);
@@ -148,11 +139,8 @@ class RSAPKCSParser {
     final Uint8List keyBytes = Uint8List.fromList(base64.decode(key));
     final ASN1Parser p = ASN1Parser(keyBytes);
 
-    final ASN1Sequence seq = p.nextObject();
+    final ASN1Sequence seq = p.nextObject() as ASN1Sequence;
 
-    if (lines[header] == pkcs1PublicHeader) {
-      return _pkcs1PublicKey(seq);
-    }
     if (lines[header] == pkcs1PublicHeader) {
       return _pkcs1PublicKey(seq);
     } else if (lines[header] == certHeader) {
@@ -163,18 +151,13 @@ class RSAPKCSParser {
   }
 
   RSAPublicKey _pkcs1PublicKey(ASN1Sequence seq) {
-    final RSAPublicKey key = RSAPublicKey();
     final List<ASN1Integer> asn1Ints = seq.elements.cast<ASN1Integer>();
-    key.modulus = asn1Ints[0].valueAsBigInteger;
-    key.publicExponent = asn1Ints[1].intValue;
-    return key;
+    return RSAPublicKey(asn1Ints[0].valueAsBigInteger!, asn1Ints[1].intValue);
   }
 
   RSAPublicKey _pkcs8PublicKey(ASN1Sequence seq) {
-    final ASN1BitString os = seq.elements[1]; //ASN1OctetString or ASN1BitString
-    final Uint8List bytes = os.valueBytes().sublist(1);
-    final ASN1Parser p = ASN1Parser(bytes);
-    return _pkcs1PublicKey(p.nextObject());
+    final ASN1Parser p = ASN1Parser(seq.elements[1].valueBytes().sublist(1));
+    return _pkcs1PublicKey(p.nextObject() as ASN1Sequence);
   }
 
   void _error(String msg) {
@@ -188,14 +171,17 @@ class RSAKeyPair {
   RSAKeyPair(this.public, this.private);
 
   /// Public key
-  RSAPublicKey public;
+  RSAPublicKey? public;
 
   /// Private key
-  RSAPrivateKey private;
+  RSAPrivateKey? private;
 }
 
 /// Public key
 class RSAPublicKey {
+
+  RSAPublicKey(this.modulus, this.publicExponent);
+
   /// Modulus
   BigInt modulus;
 
@@ -231,9 +217,12 @@ class RSAPrivateKey {
 
   /// Coefficient
   BigInt coefficient;
+
+  RSAPrivateKey(this.version, this.modulus, this.publicExponent, this.privateExponent, this.prime1, this.prime2, this.exponent1, this.exponent2, this.coefficient);
 }
 
 class X509Certificate {
+  X509Certificate(this.version, this.serial);
   int version;
   int serial;
 }

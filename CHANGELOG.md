@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Add support for sound null safety
+
 ## 1.1.4
 
 * asn1lib: "^0.8.1"

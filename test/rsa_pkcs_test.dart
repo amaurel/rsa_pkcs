@@ -17,11 +17,11 @@ void main() {
     expect(pair.public, isNotNull);
 
     expect(
-        pair.public.modulus,
+        pair.public!.modulus,
         BigInt.parse(
           '28033090497217768360343969660651078939521584065407386701840944857554190333345377486890608592313957403519912593868573272324833566960046565212209064828701606844042844758296252915683436083950709369588282830401703789082050482708460081183032757865928569658700963214439372520258229921591300947157909982421739994731742762665888890674063869593136209633509251161824923657193583205462354862058115540928040675840828039354822562384195703281964881672495986693976525885611588824710685812476559097665742184509878129643078068928823514354625680850083823859349966847983641526471178472606740080720731992805405488827115995037727686469357',
         ));
-    expect(pair.public.publicExponent, equals(65537));
+    expect(pair.public!.publicExponent, equals(65537));
   });
 
   test('rsa private key PKCS#1', () {
@@ -34,7 +34,7 @@ void main() {
     final privateKey = pair.private;
 
     expect(pair.public, equals(null));
-    expect(privateKey != null, equals(true));
+    expect(privateKey!, isNotNull);
     expect(privateKey.version, equals(0));
     final BigInt expectedModulus = BigInt.parse(
       '00d83c3cacb3b767a1020f947ca2012010ba494d86bda1efd437357b91d5c1e61b12384cd3c01f628312a5ef15cf003f62c4f6b835bbb3ea99409f87e583fa6991',
@@ -81,8 +81,8 @@ void main() {
     final String pem = rsaPrivateKeyFile.readAsStringSync();
     final RSAPKCSParser parser = RSAPKCSParser();
     final RSAKeyPair pair = parser.parsePEM(pem);
-    final RSAPrivateKey privateKey = pair.private;
-    final RSAPublicKey publicKey = pair.public;
+    final RSAPrivateKey? privateKey = pair.private;
+    final RSAPublicKey publicKey = pair.public!;
 
     expect(privateKey, equals(null));
     expect(publicKey != null, equals(true));
