@@ -70,11 +70,11 @@ class RSAPKCSParser {
     }
   }
 
-  RSAPublicKey _pkcs8CertificatePrivateKey(ASN1Sequence seq) {
+  RSAPublicKey _pkcs8CertificatePublicKey(ASN1Sequence seq) {
     if (seq.elements.length != 3) _error('Bad certificate format');
     var certificate = seq.elements[0] as ASN1Sequence;
-
-    var subjectPublicKeyInfo = certificate.elements[6] as ASN1Sequence;
+    var publicKeyIndex = certificate.elements[0] is ASN1Integer /* No version info */ ? 5 : 6;
+    var subjectPublicKeyInfo = certificate.elements[publicKeyIndex] as ASN1Sequence;
 
     return _pkcs8PublicKey(subjectPublicKeyInfo);
   }
@@ -144,7 +144,7 @@ class RSAPKCSParser {
     if (lines[header] == pkcs1PublicHeader) {
       return _pkcs1PublicKey(seq);
     } else if (lines[header] == certHeader) {
-      return _pkcs8CertificatePrivateKey(seq);
+      return _pkcs8CertificatePublicKey(seq);
     } else {
       return _pkcs8PublicKey(seq);
     }
