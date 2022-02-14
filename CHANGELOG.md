@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Handle X.509 certificates version 3 (version 1 is default)
+
 ## 2.0.0
 
 * Add support for sound null safety
