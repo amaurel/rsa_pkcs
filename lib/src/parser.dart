@@ -71,10 +71,12 @@ class RSAPKCSParser {
   }
 
   RSAPublicKey _pkcs8CertificatePublicKey(ASN1Sequence seq) {
-    if (seq.elements.length != 3) _error('Bad certificate format');
-    var certificate = seq.elements[0] as ASN1Sequence;
-    var publicKeyIndex = certificate.elements[0] is ASN1Integer /* No version info */ ? 5 : 6;
-    var subjectPublicKeyInfo = certificate.elements[publicKeyIndex] as ASN1Sequence;
+    if (seq.elements.length != 3) {
+      _error('Bad certificate format');
+    }
+    final ASN1Sequence certificate = seq.elements[0] as ASN1Sequence;
+    final int publicKeyIndex = certificate.elements[0] is ASN1Integer /* No version info */ ? 5 : 6;
+    final ASN1Sequence subjectPublicKeyInfo = certificate.elements[publicKeyIndex] as ASN1Sequence;
 
     return _pkcs8PublicKey(subjectPublicKeyInfo);
   }
@@ -107,9 +109,9 @@ class RSAPKCSParser {
 
   RSAPrivateKey _pkcs1PrivateKey(ASN1Sequence seq) {
     final List<ASN1Integer> asn1Ints = seq.elements.cast<ASN1Integer>();
-    return RSAPrivateKey(asn1Ints[0].intValue, asn1Ints[1].valueAsBigInteger!, asn1Ints[2].intValue, asn1Ints[3].valueAsBigInteger!,
-     asn1Ints[4].valueAsBigInteger!, asn1Ints[5].valueAsBigInteger!, asn1Ints[6].valueAsBigInteger!, asn1Ints[7].valueAsBigInteger!,
-     asn1Ints[8].valueAsBigInteger!);
+    return RSAPrivateKey(asn1Ints[0].intValue, asn1Ints[1].valueAsBigInteger, asn1Ints[2].intValue, asn1Ints[3].valueAsBigInteger,
+     asn1Ints[4].valueAsBigInteger, asn1Ints[5].valueAsBigInteger, asn1Ints[6].valueAsBigInteger, asn1Ints[7].valueAsBigInteger,
+     asn1Ints[8].valueAsBigInteger);
   }
 
   RSAPrivateKey _pkcs8PrivateKey(ASN1Sequence seq) {
@@ -152,7 +154,7 @@ class RSAPKCSParser {
 
   RSAPublicKey _pkcs1PublicKey(ASN1Sequence seq) {
     final List<ASN1Integer> asn1Ints = seq.elements.cast<ASN1Integer>();
-    return RSAPublicKey(asn1Ints[0].valueAsBigInteger!, asn1Ints[1].intValue);
+    return RSAPublicKey(asn1Ints[0].valueAsBigInteger, asn1Ints[1].intValue);
   }
 
   RSAPublicKey _pkcs8PublicKey(ASN1Sequence seq) {
@@ -191,6 +193,9 @@ class RSAPublicKey {
 
 /// Private key
 class RSAPrivateKey {
+
+  RSAPrivateKey(this.version, this.modulus, this.publicExponent, this.privateExponent, this.prime1, this.prime2, this.exponent1, this.exponent2, this.coefficient);
+  
   /// Version
   int version;
 
@@ -217,8 +222,6 @@ class RSAPrivateKey {
 
   /// Coefficient
   BigInt coefficient;
-
-  RSAPrivateKey(this.version, this.modulus, this.publicExponent, this.privateExponent, this.prime1, this.prime2, this.exponent1, this.exponent2, this.coefficient);
 }
 
 class X509Certificate {

@@ -1,3 +1,6 @@
+## 2.0.2
+* Fix null safety lint warnings.
+
 ## 2.0.1
 
 * Handle X.509 certificates version 3 (version 1 is default)

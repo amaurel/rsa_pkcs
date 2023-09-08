@@ -1,5 +1,5 @@
 name: rsa_pkcs
-version: 2.0.1
+version: 2.0.2
 description: Privacy-Enhanced Mail (PEM) parser, RSA, PKCS#1, PKCS#8, X.509
 homepage: https://github.com/amaurel/rsa_pkcs
 repository: https://github.com/amaurel/rsa_pkcs
