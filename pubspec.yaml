@@ -7,6 +7,9 @@ repository: https://github.com/amaurel/rsa_pkcs
 environment:
   sdk: ^3.0.0
 
+false_secrets:
+  - /test/resource/*.pem
+
 dependencies:
   asn1lib: ^1.5.0
 
