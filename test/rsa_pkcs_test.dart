@@ -1,17 +1,18 @@
 library rsa_pkcs_test;
 
 import 'dart:io';
-import 'package:test/test.dart';
+
 import 'package:rsa_pkcs/rsa_pkcs.dart';
+import 'package:test/test.dart';
 
 /// Test suite
 void main() {
   test('X509 certificate', () {
-    final certificateFile = File('test/resource/certificate.pem');
-    final pem = certificateFile.readAsStringSync();
+    final File certificateFile = File('test/resource/certificate.pem');
+    final String pem = certificateFile.readAsStringSync();
 
-    final parser = RSAPKCSParser();
-    final pair = parser.parsePEM(pem);
+    final RSAPKCSParser parser = RSAPKCSParser();
+    final RSAKeyPair pair = parser.parsePEM(pem);
 
     expect(pair.private, isNull);
     expect(pair.public, isNotNull);
@@ -27,11 +28,11 @@ void main() {
   test('rsa private key PKCS#1', () {
     //openssl genrsa -out rsa_private_key.pem
     //
-    final rsaPrivateKeyFile = File('test/resource/rsa_private_key.pem');
-    final pem = rsaPrivateKeyFile.readAsStringSync();
-    final parser = RSAPKCSParser();
-    final pair = parser.parsePEM(pem);
-    final privateKey = pair.private;
+    final File rsaPrivateKeyFile = File('test/resource/rsa_private_key.pem');
+    final String pem = rsaPrivateKeyFile.readAsStringSync();
+    final RSAPKCSParser parser = RSAPKCSParser();
+    final RSAKeyPair pair = parser.parsePEM(pem);
+    final RSAPrivateKey? privateKey = pair.private;
 
     expect(pair.public, equals(null));
     expect(privateKey!, isNotNull);
@@ -82,13 +83,13 @@ void main() {
     final RSAPKCSParser parser = RSAPKCSParser();
     final RSAKeyPair pair = parser.parsePEM(pem);
     final RSAPrivateKey? privateKey = pair.private;
-    final RSAPublicKey publicKey = pair.public!;
+    final RSAPublicKey? publicKey = pair.public;
 
     expect(privateKey, equals(null));
     expect(publicKey != null, equals(true));
 
     expect(
-        publicKey.modulus,
+        publicKey!.modulus,
         BigInt.parse(
             '00d83c3cacb3b767a1020f947ca2012010ba494d86bda1efd437357b91d5c1e61b12384cd3c01f628312a5ef15cf003f62c4f6b835bbb3ea99409f87e583fa6991',
             radix: 16));
